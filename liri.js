@@ -60,7 +60,8 @@ var spotifyThisSong = function() {
 }
 
 var movieThis = function(){
-    var movie = process.argv[3];
+    if(process.argv[3]){
+        var movie = process.argv[3];
     axios.get("http://www.omdbapi.com/?t="+movie+"&y=&plot=short&apikey=trilogy").then(
         function(response) {
        console.log(response.data);
@@ -75,7 +76,30 @@ var movieThis = function(){
        console.log("Actors: "+ response.data.Actors);
    
   }
-);
+).catch(function(error){
+    console.log("Error: +" + error);
+});
+    }else{
+        var movie = "mr.nobody";
+        axios.get("http://www.omdbapi.com/?t="+movie+"&y=&plot=short&apikey=trilogy").then(
+            function(response){
+        
+            console.log(response.data);
+            console.log("--------------------------");
+            console.log("Title: "+response.data.Title);
+            console.log("Release Year: "+ response.data.Year);
+            console.log("IMDB Rating: "+ response.data.imdbRating);
+            console.log("Rotten Tomato Rating: "+ response.data.Ratings[1].Value);
+            console.log("Country: "+response.data.Country);
+            console.log("Language: "+ response.data.Language);
+            console.log("Plot: "+ response.data.Plot);
+            console.log("Actors: "+ response.data.Actors);
+            }
+        ).catch(function(error){
+            console.log("Error: "+error);
+        })
+    };
+    
 }
 
 switch(inputFunction){
@@ -89,14 +113,3 @@ switch(inputFunction){
         movieThis();
         break;
 }
-
-
-   
-
-
-//----------------------------------------------------------
-//2 spotify-this-song
-//----------------------------------------------------------
-//3. movie-this
-//----------------------------------------------------------
-//4. do-what-it-says
