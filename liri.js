@@ -13,7 +13,7 @@ var axios = require("axios");
 console.log("WE ARE STARTING HERE--------AGAIN-----------------------------")
 //The variable spotify is an object containing your client keys
 //console.log("This is spotify: "+ spotify);
-console.log("keys.spotify: "+JSON.stringify(keys.spotify));
+//console.log("keys.spotify: "+JSON.stringify(keys.spotify));
 //console.log("This is Spotify: "+ Spotify);
 
 //---------------------------------------------------------
@@ -26,7 +26,7 @@ console.log("keys.spotify: "+JSON.stringify(keys.spotify));
 var concertThis = function (){
     var artist = process.argv[3];
     axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp").then(function(response){
-       console.log(response);
+      // console.log(response);
        for(var i = 0; i<response.data.length; i++){
            console.log("-----------------------------");
            console.log(i+1+")");
@@ -38,8 +38,11 @@ var concertThis = function (){
 };
 
 var spotifyThisSong = function() {
-    
-    var song=process.argv[3];
+    if(process.argv[3]){
+        var song=process.argv[3];
+    } else {
+        var song = "The Sign"
+    }
     spotify.search({type:"track",query:song, limit:1}, function(error,response){
         if (error){
             return console.log("Error Occurred: "+error);
