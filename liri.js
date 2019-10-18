@@ -1,59 +1,47 @@
 require("dotenv").config();
-
-//prject vars
 var keys = require('./key');
 var fs = require("fs");
 var Spotify = require('node-spotify-api');
-var spotify = new Spotify(keys.spotify);
-var request = require("request");
-//var movieName = process.argv[3];
-var inputFunction = process.argv[2];
-
 var axios = require("axios");
-console.log("WE ARE STARTING HERE--------AGAIN-----------------------------")
-//The variable spotify is an object containing your client keys
-//console.log("This is spotify: "+ spotify);
-//console.log("keys.spotify: "+JSON.stringify(keys.spotify));
-//console.log("This is Spotify: "+ Spotify);
+var moment = require("moment");
+var inputFunction = process.argv[2];
+var spotify = new Spotify(keys.spotify);
 
-//---------------------------------------------------------
-//1. concert-this
-//node liri.js concert-this <artist/band name here>
-//search the bands in town API for an artist and print out
-// Name of the Venue
-// Venue location
-// Date of the event and use moment to format it as MM/DD/YYYY
+//Start of code for concert-this------------------------------------------------------
 var concertThis = function (){
-    var artist = process.argv[3];
+    var artist = process.argv.slice(3).join(" ");
     concertSearch(artist);
 };
+
 var concertSearch = function(artist){
-    axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp").then(function(response){
-        // console.log(response);
+    artist = artist.replace(/['"]+/g, '');
+    axios.get("https://rest.bandsintown.com/artists/" + artist + 
+    "/events?app_id=codingbootcamp").then(function(response){
          for(var i = 0; i<response.data.length; i++){
+             
              console.log("-----------------------------");
              console.log(i+1+")");
              console.log("Name of Venue: "+ response.data[i].venue.name);
              console.log("Venue Location: "+ response.data[i].venue.city+", "+response.data[i].venue.country);
-             console.log("Date: "+ response.data[i].datetime);
+             console.log("Date: "+ moment(response.data[i].datetime).format("MM/DD/YYYY"));
          }
       })
 }
+//Start of code for spotify-this-song---------------------------------------------------------
 var spotifyThisSong = function() {
     if(process.argv[3]){
-        var song=process.argv[3];
+        var song=process.argv.slice(3).join(" ");
     } else {
-        var song = "The Sign"
+        var song = "The Sign Ace of Base"
     }
     spotifySearch(song);
 }
-//                     Needed to define song in function(song) or else spotifySearch does not work
 var spotifySearch = function(song){
     spotify.search({type:"track",query:song, limit:1}, function(error,response){
         if (error){
-            return console.log("Error Occurred: "+error);
+            return console.log("Error Message: "+error);
         } else {
-            console.log("The response worked and is right here: " +JSON.stringify(response));
+            //console.log("The response worked and is right here: " +JSON.stringify(response));
             console.log("----------------------------");
             console.log("Song Name: "+response.tracks.items[0].name);
             console.log("Artist(s):");
@@ -66,19 +54,16 @@ var spotifySearch = function(song){
         }
     })
 }
-
-
-
+//Start of code for movie-this------------------------------------------------------------
 var movieThis = function(){
     if(process.argv[3]){
-        var movie = process.argv[3];
+        var movie = process.argv.slice(3).join(" ");
     }else{
         var movie = "mr.nobody";
     }
-    movieSearch(movie);
-    
+    movieSearch(movie);    
 }
-
+//start of movie seach function-----------------------------------------------------------
 var movieSearch = function(movie){
     axios.get("http://www.omdbapi.com/?t="+movie+"&y=&plot=short&apikey=trilogy").then(
         function(response) {
@@ -98,8 +83,9 @@ var movieSearch = function(movie){
     console.log("Error: +" + error);
 });
 
-}
+}//End of movie search function-------------------------------------------------------------
 
+//Start of dowhatitsays function------------------------------------------------------------
 var doWhatItSays = function(){
     fs.readFile("random.txt", "utf8",function(error, data){
         if (error) {
@@ -107,7 +93,7 @@ var doWhatItSays = function(){
         }
         //"Take the text and splits it into an array."
         var commandArray = data.split(",");
-        console.log(commandArray);
+       // console.log(commandArray);
 
         if(commandArray[0]==="spotify-this-song"){
             spotifySearch(commandArray[1]);
@@ -117,8 +103,9 @@ var doWhatItSays = function(){
             concertSearch(commandArray[1]);
         }
     } )
-}
+}//End of dowhatitsays function--------------------------------------------------------------
 
+//Switch statement must be placed below the defined functions
 switch(inputFunction){
     case "concert-this":
         concertThis();
@@ -133,9 +120,3 @@ switch(inputFunction){
         doWhatItSays();
         break;
 }
-
-
-
-// Still need to finish typing up code for the last function
-// and to take care of formatting the play times in concert-this.city
-// Everything else has been taken care of.
