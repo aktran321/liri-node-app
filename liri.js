@@ -67,7 +67,7 @@ var movieThis = function(){
 var movieSearch = function(movie){
     axios.get("http://www.omdbapi.com/?t="+movie+"&y=&plot=short&apikey=trilogy").then(
         function(response) {
-       console.log(response.data);
+       //console.log(response.data);
        console.log("--------------------------");
        console.log("Title: "+response.data.Title);
        console.log("Release Year: "+ response.data.Year);
